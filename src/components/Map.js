@@ -4,6 +4,7 @@ import esriConfig from "@arcgis/core/config.js";
 import MapView from "@arcgis/core/views/MapView";
 import Map from "@arcgis/core/Map";
 import Locate from "@arcgis/core/widgets/Locate";
+import Graphic from "@arcgis/core/Graphic";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 
 import { AppContext } from "../state/context";
@@ -23,7 +24,7 @@ const MapComponent = () => {
       // En liste med valg inner vi i API dokumentasjonen:
       // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap
       const map = new Map({
-        basemap: "gray-vector",
+        basemap: "topo-vector",
       });
 
       // Hent dataen
@@ -35,7 +36,7 @@ const MapComponent = () => {
           content: [{
             type: "text",
             text: `<p>Type: {tourism}</p>
-                  <p>{description}</p>`
+<p>{description}</p>`
           }]
         }
       });
@@ -71,27 +72,39 @@ const MapComponent = () => {
         });
         mapView.ui.add(locateWidget, "top-left");
 
-        // Vi har også lagd en egen widget som kan legges til i kartet
+        // Vi har og lagd en egen widged som kan legges til
         // Denne ligger i components/RouteWidget, men den er ikke helt ferdig enda
         // Den må først legges til i App.js fila, men det er noen feil med den
 
-        // Det første vi må gjøre er å sørge for at widgeten har tilgang til MapViewet
+        // Det første vi må gjøre er å sørge for at Widgeten har tilgang til MapViewet
         // Dette kan gjøres ved å legge den til i contexten vår
         // Resten av feilene må løses i RouteWidget fila
         context.mapView.set(mapView);
 
         // Til slutt ønsker vi at brukeren skal kunne velge startssted for widget selv
-        // Dette kan gjøres ved å bruke lokasjonen fra locate widgeten, eller ved å f. eks. klikke i kartet
+        // Dette kan gjøres ved å bruke lokasjonen fra locate widgeten, eller ved å f. eks klikke i kartet
         // For å kunne bruke locate widgeten trenger vi en lytter på widgeten.
         // Mer om dette finnes på siden:
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Locate.html#on
-        // Det er mulig å lagre resultatet fra widgeten i contexten med context.point.set()
+        // Det er mulig å lagre resultatet ra widgeten i contexten med context.point.set()
+        locateWidget.on("locate", function (locateEvent) {
+          if (locateEvent.position.coords) {
+            context.point.set({
+              type: "point",
+              latitude: locateEvent.position.coords.latitude,
+              longitude: locateEvent.position.coords.longitude,
+            });
+          }
+        });
 
         // For å kunne klikke i kartet trenger vi en lytter på MapViewet
         // Dette gjøres ganske likt som for locate widgeten, og mer info er på API siden for MapView
+        mapView.on("click", (event) => {
+          context.point.set(event.mapPoint);
+        });
 
-        // For klikk i kart er det også et ønsket om å legge til et punkt som viser hvor brukeren har klikket
-        // For å gjøre dette trenger vi å ta i bruk noe for symbologi, f. eks. SimpleMarkerSymbol
+        // For klikk i kart er det og ønsket å legge til et punkt som viser hvor brukeren har klikket
+        // For å gjøre dette trenger vi å ta i bruk noe for symbologi, f. eks SimpleMarkerSymbol
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleMarkerSymbol.html
         // Og vi trenger en grafikk som legges til MapView
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-Graphic.html
@@ -100,6 +113,32 @@ const MapComponent = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    if (context.mapView.value) {
+      const mapView = context.mapView.value;
+
+      const oldPoint = mapView.graphics.items.filter((item) => {
+        return item.geometry.type === "point";
+      })[0];
+      mapView.graphics.remove(oldPoint);
+
+      const simpleMarkerSymbol = {
+        type: "simple-marker",
+        color: "#1976d2", // Blue
+        outline: {
+          color: [255, 255, 255], // White
+          width: 1,
+        },
+      };
+
+      const pointGraphic = new Graphic({
+        geometry: context.point.value,
+        symbol: simpleMarkerSymbol,
+      });
+
+      mapView.graphics.add(pointGraphic);
+    }
+  }, [context.point.value, context.mapView.value]);
 
   return <div className="mapDiv" ref={mapDiv}></div>;
 };
