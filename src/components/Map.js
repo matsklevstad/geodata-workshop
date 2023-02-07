@@ -14,7 +14,7 @@ const MapComponent = () => {
   const context = useContext(AppContext);
 
   useEffect(() => {
-    // Det første vi trenger er et Map objekt med bakgrunnskart
+    // Det første vi trenger er et Map-objekt med bakgrunnskart
     // Konstruktøren er allerede i koden, men vi må velge bakgrunnskartet
     // En liste med valg finner vi i API dokumentasjonen under "For use without an API key":
     // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap
@@ -29,7 +29,7 @@ const MapComponent = () => {
     // Url: https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OSM_Tourism_EU/FeatureServer/0
     // Se dokumentasjonssiden for et eksempel: https://developers.arcgis.com/javascript/latest/add-a-feature-layer/
 
-    // TODO: Legge hente data
+    // TODO: Hente data
     // TODO: Legge til dataen i kartet
     // TODO: Legg til dataen i context
 
@@ -44,7 +44,7 @@ const MapComponent = () => {
                   <p>{description}</p>`,
         },
       ],
-    });
+    })
 
     // For å kunne vise kartet må dette legges til i et MapView
     // Dokumentasjonen for MapView finnes her:
@@ -59,13 +59,11 @@ const MapComponent = () => {
       // container: , // Referanse til DOM elementets ID
       // extent:
     }).when(() => {
-      // Denne koden kjører når karter er oppe å går
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // Denne koden kjører når kartet er initialisert
+    })
   }, []);
 
-  return <div id="mapDiv" style={{ height: "100%", width: "100%" }}></div>;
+  return <div id="mapDiv" className="mapDiv"></div>
 };
 
 export default MapComponent;
