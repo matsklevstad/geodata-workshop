@@ -14,6 +14,7 @@ const MapComponent = () => {
   // Required: Set this property to insure assets resolve correctly.
   esriConfig.assetsPath = "./assets";
   const mapDiv = useRef(null);
+  const [loaded, setLoaded] = useState(false) 
 
   // Opprett kartet
   useEffect(() => {
@@ -59,6 +60,7 @@ const MapComponent = () => {
           xmax: 10.560264587402344,
         },
       }).when((mapView) => {
+        setLoaded(true)
         // Esri har mange widgets som er enkle å legge til i kartet
         // En av disse er locate widgeten, som flytter kartet til din possisjon
         // Widgeten må først opprettes, så plasseres på kartet
@@ -101,7 +103,10 @@ const MapComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div className="mapDiv" ref={mapDiv}></div>;
+    return <>
+    { loaded ? "" : <p>map not loaded</p> }
+    <div className="mapDiv" ref={mapDiv} />
+  </>;
 };
 
 export default MapComponent;
