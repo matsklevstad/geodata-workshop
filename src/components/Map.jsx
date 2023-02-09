@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect, useContext, useState } from "react";
 
 import esriConfig from "@arcgis/core/config.js";
 import MapView from "@arcgis/core/views/MapView";
@@ -15,6 +15,7 @@ const MapComponent = () => {
   // Required: Set this property to insure assets resolve correctly.
   esriConfig.assetsPath = "./assets";
   const mapDiv = useRef(null);
+  const [loaded, setLoaded] = useState(false) 
 
   // Opprett kartet
   useEffect(() => {
@@ -27,7 +28,7 @@ const MapComponent = () => {
         basemap: "topo-vector",
       });
 
-      // Hent dataen
+      // Hent data
       const featureLayer = new FeatureLayer({
         url: "https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OSM_Tourism_EU/FeatureServer/0",
         popupEnabled: true,
@@ -41,10 +42,10 @@ const MapComponent = () => {
         }
       });
 
-      // Legg til dataen i kartet
+      // Legg til data i kartet
       map.add(featureLayer);
 
-      // Legg til dataen i context
+      // Legg til data i context
       context.featureLayer.set(featureLayer);
 
       // For å kunne vise kartet må dette legges til i et MapView
@@ -60,8 +61,9 @@ const MapComponent = () => {
           xmax: 10.560264587402344,
         },
       }).when((mapView) => {
+        setLoaded(true)
         // Esri har mange widgets som er enkle å legge til i kartet
-        // En av disse er locate widgeten, som flytter kartet til din possisjon
+        // En av disse er locate widgeten, som flytter kartet til din posisjon
         // Widgeten må først opprettes, så plasseres på kartet
         // Dokumentasjon for dette er på:
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Locate.html
@@ -72,7 +74,7 @@ const MapComponent = () => {
         });
         mapView.ui.add(locateWidget, "top-left");
 
-        // Vi har og lagd en egen widged som kan legges til
+        // Vi har og lagd en egen widget som kan legges til
         // Denne ligger i components/RouteWidget, men den er ikke helt ferdig enda
         // Den må først legges til i App.js fila, men det er noen feil med den
 
@@ -81,8 +83,8 @@ const MapComponent = () => {
         // Resten av feilene må løses i RouteWidget fila
         context.mapView.set(mapView);
 
-        // Til slutt ønsker vi at brukeren skal kunne velge startssted for widget selv
-        // Dette kan gjøres ved å bruke lokasjonen fra locate widgeten, eller ved å f. eks klikke i kartet
+        // Til slutt ønsker vi at brukeren skal kunne velge startsted for widget selv
+        // Dette kan gjøres ved å bruke lokasjonen fra locate widgeten, eller ved å f. eks. klikke i kartet
         // For å kunne bruke locate widgeten trenger vi en lytter på widgeten.
         // Mer om dette finnes på siden:
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Locate.html#on
@@ -140,7 +142,10 @@ const MapComponent = () => {
     }
   }, [context.point.value, context.mapView.value]);
 
-  return <div className="mapDiv" ref={mapDiv}></div>;
+    return <>
+    { loaded ? "" : <p>map not loaded</p> }
+    <div className="mapDiv" ref={mapDiv} />
+  </>;
 };
 
 export default MapComponent;
