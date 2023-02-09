@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect, useContext, useState } from "react";
 
 import esriConfig from "@arcgis/core/config.js";
 import MapView from "@arcgis/core/views/MapView";
@@ -27,7 +27,7 @@ const MapComponent = () => {
         basemap: "gray-vector",
       });
 
-      // Hent dataen
+      // Hent data
       const featureLayer = new FeatureLayer({
         url: "https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OSM_Tourism_EU/FeatureServer/0",
         popupEnabled: true,
@@ -41,7 +41,7 @@ const MapComponent = () => {
         }
       });
 
-      // Legg til dataen i kartet
+      // Legg til data i kartet
       map.add(featureLayer);
 
       // Legg til dataen i context
@@ -62,7 +62,7 @@ const MapComponent = () => {
       }).when((mapView) => {
         setLoaded(true)
         // Esri har mange widgets som er enkle å legge til i kartet
-        // En av disse er locate widgeten, som flytter kartet til din possisjon
+        // En av disse er locate widgeten, som flytter kartet til din posisjon
         // Widgeten må først opprettes, så plasseres på kartet
         // Dokumentasjon for dette er på:
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Locate.html
@@ -82,7 +82,7 @@ const MapComponent = () => {
         // Resten av feilene må løses i RouteWidget fila
         context.mapView.set(mapView);
 
-        // Til slutt ønsker vi at brukeren skal kunne velge startssted for widget selv
+        // Til slutt ønsker vi at brukeren skal kunne velge startsted for widget selv
         // Dette kan gjøres ved å bruke lokasjonen fra locate widgeten, eller ved å f. eks. klikke i kartet
         // For å kunne bruke locate widgeten trenger vi en lytter på widgeten.
         // Mer om dette finnes på siden:
