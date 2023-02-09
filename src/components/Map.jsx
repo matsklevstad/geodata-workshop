@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useEffect } from "react";
+import React, { useRef, useContext, useEffect, useState } from "react";
 import { AppContext } from "../state/context";
 
 import esriConfig from "@arcgis/core/config.js";
@@ -14,6 +14,7 @@ const MapComponent = () => {
   esriConfig.assetsPath = "./assets";
   const mapDiv = useRef(null);
   const context = useContext(AppContext);
+  const [loaded, setLoaded] = useState(false) 
 
   // Opprett kartet
   useEffect(() => {
@@ -23,7 +24,7 @@ const MapComponent = () => {
       // En liste med valg finner vi i API dokumentasjonen:
       // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap
       const map = new Map({
-        basemap: "",
+        basemap: "topo-vector",
       });
 
       // Vi ønsker så å hente data som vi kan legge til i kartet.
@@ -38,7 +39,7 @@ const MapComponent = () => {
         content: [{
           type: "text",
           text: `<p>Type: {tourism}</p>
-                  <p>{description}</p>`
+<p>{description}</p>`
         }]
       });
 
@@ -54,19 +55,23 @@ const MapComponent = () => {
       // xmin: 10.227928161621094,
       // ymax: 63.453731595863324,
       // xmax: 10.560264587402344
-      new MapView({
+      const view = new MapView({
         // MapView trenger minimum feltene:
-        // map
-        // container
+        map,
+        container: mapDiv.current
         // extent(valgfritt, men lurt å ha med)
       }).when(() => {
+        setLoaded(true)
         // Når kartet er initialisert kan vi manipulre dataen her
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div className="mapDiv" ref={mapDiv}></div>;
+  return <>
+    { loaded ? "" : <p>map not loaded</p> }
+    <div className="mapDiv" ref={mapDiv} />
+  </>;
 };
 
 export default MapComponent;
