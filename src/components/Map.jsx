@@ -10,33 +10,36 @@ import PopupTemplate from "@arcgis/core/PopupTemplate";
 import "../App.css";
 
 const MapComponent = () => {
-  // Required: Set this property to insure assets resolve correctly.
   esriConfig.assetsPath = "./assets";
-  const mapDiv = useRef(null);
   const context = useContext(AppContext);
   const [loaded, setLoaded] = useState(false) 
 
-  // Opprett kartet
   useEffect(() => {
-    if (mapDiv.current) {
-      // Det første vi trenger er et Map objekt med bakgrunnskart
-      // Konstruktøren er allerede i koden, men vi må velge bakgrunnskartet
-      // En liste med valg finner vi i API dokumentasjonen:
-      // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap
-      const map = new Map({
-        basemap: "topo-vector",
-      });
+    // Det første vi trenger er et Map-objekt med bakgrunnskart
+    // Konstruktøren er allerede i koden, men vi må velge bakgrunnskartet
+    // En liste med valg finner vi i API dokumentasjonen under "For use without an API key":
+    // https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap
 
-      // Vi ønsker så å hente data som vi kan legge til i kartet.
-      // På følgende tjeneste finner dere punkter som viser en rekke turistatraksjoner i Europa:
-      // Url: https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OSM_Tourism_EU/FeatureServer/0
-      // Se dokumentasjonssiden for et eksempel: https://developers.arcgis.com/javascript/latest/add-a-feature-layer/
+    const map = new Map({
+      // TODO: Definer bakgrunnskart
+      basemap: "",
+    });
 
-      // Om man ønsker å ha en popup når man trykker på punktene i FeatureLayeret trenger man også å legge
-      // inn en popup template i featurelayeret. Denne har vi ferdig definert her.
-      const popUpTemplate = new PopupTemplate({
-        title: "{name}",
-        content: [{
+    // Vi ønsker så å hente data som vi kan legge til i kartet.
+    // På følgende tjeneste finner dere punkter som viser en rekke turistatraksjoner i Europa:
+    // Url: https://services-eu1.arcgis.com/zci5bUiJ8olAal7N/arcgis/rest/services/OSM_Tourism_EU/FeatureServer/0
+    // Se dokumentasjonssiden for et eksempel: https://developers.arcgis.com/javascript/latest/add-a-feature-layer/
+
+    // TODO: Hente data
+    // TODO: Legge til dataen i kartet
+    // TODO: Legg til dataen i context
+
+    // Om man ønsker å ha en popup når man trykker på punktene i FeatureLayeret trenger man også å legge
+    // inn en popup template i featurelayeret. Denne har vi ferdig definert her.
+    const popUpTemplate = new PopupTemplate({
+      title: "{name}",
+      content: [
+        {
           type: "text",
           text: `<p>Type: {tourism}</p>
 <p>{description}</p>`
@@ -57,14 +60,13 @@ const MapComponent = () => {
       // xmax: 10.560264587402344
       const view = new MapView({
         // MapView trenger minimum feltene:
-        map,
-        container: mapDiv.current
+        // map:
+        // container:
         // extent(valgfritt, men lurt å ha med)
       }).when(() => {
         setLoaded(true)
         // Når kartet er initialisert kan vi manipulre dataen her
       });
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
