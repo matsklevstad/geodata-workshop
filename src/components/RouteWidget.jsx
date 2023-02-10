@@ -34,7 +34,7 @@ const RouteWidget = () => {
       route.attributes.name = "route";
       route.symbol = {
         type: "simple-line",
-        color: "#363636",
+        color: "#52B1FA",
         width: 3,
       };
 
