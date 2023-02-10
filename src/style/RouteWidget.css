@@ -1,0 +1,13 @@
+#select, #container {
+    color: "rgb(36,36,36)" !important;   
+    border-color: white !important;
+}
+
+#select {
+    background-color: white;   
+}
+
+Button {
+    color: black !important;
+    background-color: white !important;
+}
